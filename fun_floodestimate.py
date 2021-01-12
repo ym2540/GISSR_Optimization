@@ -125,6 +125,9 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
     m1 = 12; m2 = 14; n1 = 13; n2 = 15;    o1 = 14; o2 = 16; p1 = 15; p2 = 17
     q1 = 16; q2 = 18; r1 = 17; r2 = 19;    s1 = 18; s2 = 20; t1 = 19; t2 = 21
 
+    #print("elev\n")
+    #print(elev)
+
     for k in fid:
         if k in ParWall:
             ds1 = np.tile(sec1_w[:,1] - sec1_w[:,0],(nt,1)).transpose()
@@ -140,6 +143,7 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
             V_new = V_new + np.sum(h_new*l*v_new*ds,axis=1)
             
         else:
+            #print(k)
             ds1 = np.tile(sec1_w[:,1] - sec1_w[:,0],(nt,1)).transpose()
             ds2 = np.tile(sec2_w[:,1] - sec2_w[:,0],(nt,1)).transpose()
             ds  = np.concatenate((ds1,ds2),axis=1)

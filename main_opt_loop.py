@@ -13,12 +13,9 @@ from fun_floodestimate import SurfaceVolFunc
 from fun_damagecost import damage
 
 from fun_objective_loop import objective
-# from fun_objective_loop import constraint1
-# from fun_objective_loop import constraint2
-# from fun_objective_loop import constraint3
-now = datetime.datetime.now()
-
-print(now)
+from fun_objective_loop import constraint1
+from fun_objective_loop import constraint2
+from fun_objective_loop import constraint3
 
 # setup
 # Surface Volume Input
@@ -79,7 +76,6 @@ sect_1 = [sections[-4],sections[-3],sections[-2],sections[-1]]
 total_cost = 75*10**9 # total cost without any protective measure
 cost_opt   = total_cost
 x_opt 	   = [0,2040,0,0]
-budget 	   = 5e9
 
 start_time = time.time()
 
@@ -91,20 +87,12 @@ for ws in np.linspace(0,163,16):
 										SVfg1,SVfg2,SVfg3,SVfg4,SVfg5,SVfg6,SVfg7,SVfg8,SVfg9,SVfg10,SVfg11,SVfg12,SVfg13,SVfg14,SVfg15,SVfg16,SVfg17,SVfg18,SVfg19,SVfg20,
 										SV_all,roughness,slope,sect0,sect1,sect2,sect3,sect_1,sect_2,sect_3)
 			if total_cost_new < total_cost:
-				cost_wall = 109360*x[0]*(x[3]-x[2])*100
-				if cost_wall < budget:
-					total_cost  = total_cost_new
-					cost_opt 	= np.append(cost_opt,total_cost_new)
-					x_opt	  	= np.concatenate((x_opt,x))
-					cost_wall_opt = cost_wall
+				total_cost  = total_cost_new
+				cost_opt 	= np.append(cost_opt,total_cost_new)
+				x_opt	  	= np.concatenate((x_opt,x))
 
 elapsed_time = time.time() - start_time
 print("Elapsed Time: ",elapsed_time, "sec")
 
-
-print('Corresponding Cost:',cost_opt[-1])
-
-x_optimal = x_opt.reshape(int(x_opt.size/4),4)
-
-print('Optimal Variables:', x_optimal[-1])
-print('Wall Cost:', cost_wall_opt)
+print('Optimal Variables:',x)
+print('Corresponding Cost:',total_cost_new)

@@ -13,21 +13,36 @@ import glob
 import datetime
 
 ## import functions
-from fun_floodestimate          import FloodHeight
-from fun_floodestimate          import FloodHeightWall
-from fun_floodestimate          import FloodTravelSectGroup
-from fun_floodestimate          import SurfaceVolFunc
-from fun_damagecost             import damage
-from fun_SubwayFlood_noPrtc_opt import storm_econ_loss
+from fun_floodestimate import FloodHeight
+from fun_floodestimate import FloodHeightWall
+from fun_floodestimate import FloodTravelSectGroup
+from fun_floodestimate import SurfaceVolFunc
+from fun_damagecost import damage
 
+def constraint1(x):
+    # wall_id = x[0]
+    wall_id = pd.read_csv("C:\\Users\\Yuki\\Documents\\Research\\ArcGIS\\GeoData\\Segments\\BigU\\BigU_LES_all.csv")["ID"]
+
+    wall_h  = x[0]
+    wall_year = x[1]
+    wall_start = x[2]
+    wall_end  = x[3]
+
+    # wall_cost = (22195*wall_h-16553)*wall_id.size*100/((1+0.05)**(wall_year-2020))
+    wall_cost = (22195*wall_h-16553)*(wall_end-wall_start)*100/((1+0.05)**(wall_year-2020))
+    return 1e9 - wall_cost
+
+def constraint2(x):
+    return 72.4*10**9 - objective(x)
+
+def constraint3(x):
+    wall_start = x[2]
+    wall_end   = x[3]
+    return 163 - (wall_end - wall_start)
 
 def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,SVf13,SVf14,SVf15,SVf16,SVf17,SVf18,SVf19,SVf20,
-                SVfg1,SVfg2,SVfg3,SVfg4,SVfg5,SVfg6,SVfg7,SVfg8,SVfg9,SVfg10,SVfg11,SVfg12,SVfg13,SVfg14,SVfg15,SVfg16,SVfg17,SVfg18,SVfg19,SVfg20,
-                SV_all,roughness,slope,sect0,sect1,sect2,sect3,sect_1,sect_2,sect_3):
-    
-    ftm = 0.3048
-    nt = 10
-
+                                        SVfg1,SVfg2,SVfg3,SVfg4,SVfg5,SVfg6,SVfg7,SVfg8,SVfg9,SVfg10,SVfg11,SVfg12,SVfg13,SVfg14,SVfg15,SVfg16,SVfg17,SVfg18,SVfg19,SVfg20,
+                                        SV_all,roughness,slope,sect0,sect1,sect2,sect3,sect_1,sect_2,sect_3,numiter=1):
     # wall info
     # wall_id = pd.read_csv("C:\\Users\\Yuki\\Documents\\Research\\ArcGIS\\GeoData\\Segments\\BigU\\BigU_LES_all.csv")["ID"]
     wall_h   = x[0]
@@ -37,9 +52,10 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
     wall_num    = np.arange(int(wall_start),int(wall_end-wall_start)) # need to refer position and fid: fid[position == wall_id]
 
     # wall_cost = (22195*wall_h-16553)*wall_id.size*100/((1+0.05)**(wall_year-2020))
-    # wall_cost = (22195*wall_h-16553)*(wall_end-wall_start)*100/((1+0.05)**(wall_year-2020))
-    wall_cost = 109360*wall_h*(wall_end-wall_start)*100
+    wall_cost = (22195*wall_h-16553)*(wall_end-wall_start)*100/((1+0.05)**(wall_year-2020))
 
+    ftm = 0.3048
+    nt = 10
     # num_N = 1000
 
     # Topography Data
@@ -53,72 +69,7 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
     #sandy_surge = pd.read_csv("C:\\Users\\Yuki\\Documents\\Research\\Flood Volume\\20121029_CO-OPS_8518750_wl.csv")
     #surge_height = sandy_surge["Surge"]
 
-    wall_id  = fid[(position>=wall_start) & (position<=wall_end)]
-
-    ###################### Subway Setup ######################
-
-    ## Import Subway Data
-    SubwayOpenings = pd.read_csv(r"SubwayData\AllOpenings_LMN_fill.csv")
-
-    Vulnerabil = SubwayOpenings["Vulnerabil"];    Mitigation = SubwayOpenings["Mitigation"]
-    Mitigati_1 = SubwayOpenings["Mitigati_1"];    CrtclElev  = SubwayOpenings["Crtcl_Elev"]
-    SubwayLineName = SubwayOpenings["LINE"];      fid_open   = SubwayOpenings["OBJECTID"]
-    division   = SubwayOpenings["Div"]
-    assigned_line = SubwayOpenings['Line_FID']
-
-    OpenArea = np.zeros(fid_open.size)
-    OpenArea[Vulnerabil == 'Door']           = 7.33*3.33*ftm**2;    OpenArea[Vulnerabil == 'Elevator']       = 9.08*8.5*ftm**2
-    OpenArea[Vulnerabil == 'Emergency Exit'] = 7.33*3.33*ftm**2;    OpenArea[Vulnerabil == 'Escalator']      = 9.08*8.5*ftm**2
-    OpenArea[Vulnerabil == 'Hatch']          = 7.33*3.33*ftm**2;    OpenArea[Vulnerabil == 'Louver']         = 9.08*8.5*ftm**2
-    OpenArea[Vulnerabil == 'Door']           = 7.33*3.33*ftm**2;    OpenArea[Vulnerabil == 'Manhole']        = 9.08*8.5*ftm**2
-    OpenArea[Vulnerabil == 'Stairway']       = 7.33*3.33*ftm**2;    OpenArea[Vulnerabil == 'Vault']          = 9.08*8.5*ftm**2
-    OpenArea[Vulnerabil == 'Vent Battery']   = 9.08*8.5*ftm**2;     OpenArea[Mitigation == 'Deployable cover'] = OpenArea[Mitigation == 'Deployable cover']*0.8
-
-    LeakRate = np.zeros(fid_open.size)
-    c = 0.134/ftm/60 # leakage rate (gallon/min/meter)
-    LeakRate[Mitigation == 'Deployable cover'] = c;         LeakRate[Mitigation == 'Flex-gate'] = c
-    LeakRate[Mitigation == 'MCD'] = 0.3*c;                  LeakRate[Mitigation == 'Removable flood panel'] = 0.1*c
-    LeakRate[Mitigation == 'Stop logs'] = 0.1*c;            LeakRate[Mitigation == 'Watertight cover'] = 0.1*c
-    LeakRate[Mitigation == 'Watertight hatch'] = 0.1*c;     LeakRate[Mitigation == 'Watertight/Marine door'] = 0.1*c
-
-    # import subwayline data
-    SubwayLine = pd.read_csv(r"SubwayData\SubwayLineConnect.csv")
-    SubwayStop = pd.read_csv(r"SubwayData\SubwayStationLMN+Open.csv")
-
-    fid_line = SubwayLine["FID"]
-    fid_stop = SubwayStop["objectid"]
-    exploc_stop = SubwayStop["ExpLoc"]
-    length_line = SubwayLine["length_m"]
-    elev_line = SubwayLine["MEAN"] - SubwayLine["STD"]
-    elev_stop = SubwayStop["MEAN"]
-    exploc_line = SubwayLine["ExpLoc"]
-    tunelev_line = elev_line - 20*ftm
-    tunelev_stop = elev_stop - 20*ftm
-    div_line = SubwayLine["Div"]
-    div_stop = SubwayStop["Div"]
-    name_line = SubwayLine["name_text"]
-    name_stop = SubwayStop["line_text"]
-    StopOpening = SubwayStop["Open300m"] # openings within 300 m
-
-    secarea_1trk = 15*30*ftm**2;    secarea_2trk = 15*30*ftm**2*2
-
-    north_id = SubwayLine["North_FID"]
-    south_id1 = SubwayLine["South_FID"];         south_id2      = SubwayLine["South_FID2"];    south_id3 = SubwayLine["South_FID3"]
-    north_id_stop = SubwayLine["North_Stop"];    south_id_stop  = SubwayLine["South_Stop"]
-
-    line_intersection = pd.read_csv(r"SubwayData\subwaystopscode.csv")
-    elev_code = line_intersection["Elevation Code"].values
-    station_complex = line_intersection["Station Complex"]
-    div_subwaycode = line_intersection["Div"]
-
-    ###################### Setup Surge Property ##############
-
-    loc = 0.68;        ftm = 0.3048;       nt = 10;           g = 9.81
-    xi_c = 0.08;       delta_c = 0.14;     lambda_c = 4.11
-    xi_w = 0.45;       delta_w = 0.13;     lambda_w = 1.52
-    beta1_1_c = 27.84; beta1_2_c = -18.58; beta2_1_c = 10.46; beta2_2_c = -6.98
-    beta1_1_w = 19.23; beta1_2_w = -11.90; beta2_1_w = 4.96;  beta2_2_w = -1.89
-    alpha_c = 3;       beta_c = 3.1;       alpha_w = 2.56;    beta_w = 2.07
+    wall_id  = fid[(position>wall_start) & (position<wall_end)]
 
     ###################### set up damage cost ################
 
@@ -159,17 +110,17 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
 
     ###################### MAIN #################################
 
+
     elev = topo["MEAN"]
     elev[wall_id] = elev[wall_id] + wall_h
 
     n_damage_loss_c = [];   n_damage_loss_w = []
     n_cost_util_c   = [];   n_cost_util_w   = []
     n_cost_tran_c   = [];   n_cost_tran_w   = []
-    n_econ_subway_c = [];   n_econ_subway_w = []
 
     # start_time = time.time()
 
-    for N in range(1):
+    for N in range(numiter):
         # flood estimation
         # numstorm = pd.read_csv(r"C:\Users\Yuki\Documents\Research\Python\2020 Flood Damage Loss\Optimization\SurgeData\%d-num_storm.csv"%N).values
         peak_c = pd.read_csv(r"C:\Users\Yuki\Documents\Research\Python\2020 Flood Damage Loss\Optimization\SurgeData\%d-peak_c.csv"%N).values
@@ -204,20 +155,7 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
         fld_h_w_sect_g,V_w_sect_avr = FloodTravelSectGroup(SV_all,ndiv18,peak_w,sect0,sect1,sect2,sect3,sect_3,sect_2,sect_1,V_w,SVfg1,SVfg2,SVfg3,SVfg4,SVfg5,SVfg6,SVfg7,SVfg8,SVfg9,SVfg10,SVfg11,SVfg12,SVfg13,SVfg14,SVfg15,SVfg16,SVfg17,SVfg18,SVfg19,SVfg20)
         fld_h_c_sect_g,V_c_sect_avr = FloodTravelSectGroup(SV_all,ndiv18,peak_c,sect0,sect1,sect2,sect3,sect_3,sect_2,sect_1,V_c,SVfg1,SVfg2,SVfg3,SVfg4,SVfg5,SVfg6,SVfg7,SVfg8,SVfg9,SVfg10,SVfg11,SVfg12,SVfg13,SVfg14,SVfg15,SVfg16,SVfg17,SVfg18,SVfg19,SVfg20)
 
-        # Subway Flooding 
-        loss_econ_list_c = []; days_pump_list_c = []; loss_econ_list_w = []; days_pump_list_w = []
 
-        loss_econ_list_c,days_pump_list_c = storm_econ_loss(fld_h_c_sect_g,fid_line,fid_stop,exploc_stop, LeakRate, OpenArea, north_id, south_id1, south_id2,south_id3, 
-                                                        north_id_stop, south_id_stop, elev_code, station_complex, div_subwaycode, elev_stop, exploc_line,tunelev_stop,
-                                                        tunelev_line, div_line, div_stop, secarea_1trk, secarea_2trk,assigned_line, CrtclElev,fid_open, division,
-                                                        beta1_1_c,beta1_2_c,beta2_1_c,beta2_2_c,alpha_c,beta_c,days_pump_list_c,loss_econ_list_c)
-        loss_econ_list_w,days_pump_list_w = storm_econ_loss(fld_h_w_sect_g,fid_line,fid_stop,exploc_stop, LeakRate, OpenArea, north_id, south_id1, south_id2,south_id3, 
-                                                        north_id_stop, south_id_stop, elev_code, station_complex, div_subwaycode, elev_stop, exploc_line,tunelev_stop,
-                                                        tunelev_line, div_line, div_stop, secarea_1trk, secarea_2trk,assigned_line, CrtclElev,fid_open, division,
-                                                        beta1_1_w,beta1_2_w,beta2_1_w,beta2_2_w,alpha_w,beta_w,days_pump_list_w,loss_econ_list_w)
-
-        n_econ_subway_c = np.append(n_econ_subway_c,np.sum(loss_econ_list_c))
-        n_econ_subway_w = np.append(n_econ_subway_w,np.sum(loss_econ_list_w))
 
         # damage analysis
         fld_h_c = fld_h_c_sect_g/ftm
@@ -235,6 +173,5 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
     mean_damage_loss_c  = np.mean(n_damage_loss_c); mean_damage_loss_w  = np.mean(n_damage_loss_w)
     mean_cost_util_c    = np.mean(n_cost_util_c);   mean_cost_util_w    = np.mean(n_cost_util_w)
     mean_cost_tran_c    = np.mean(n_cost_tran_c);   mean_cost_tran_w    = np.mean(n_cost_tran_w)
-    mean_econ_subway_c  = np.mean(n_econ_subway_c); mean_econ_subway_w  = np.mean(n_econ_subway_w); 
 
-    return wall_cost + mean_damage_loss_c + mean_damage_loss_w + mean_cost_util_c + mean_cost_util_w + mean_cost_tran_c + mean_cost_tran_w + mean_econ_subway_c + mean_econ_subway_w, wall_cost
+    return wall_cost + mean_damage_loss_c + mean_damage_loss_w + mean_cost_util_c + mean_cost_util_w + mean_cost_tran_c + mean_cost_tran_w
