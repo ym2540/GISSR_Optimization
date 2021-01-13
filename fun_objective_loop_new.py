@@ -61,7 +61,7 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
 
     # Topography Data
     topo = pd.read_csv("LMN_div_id.csv")
-    elev = topo["MEAN"]
+    elev = topo["MEAN2"]
     fid  = topo["FID"]
     div18 = topo["DIV18"]
     position = topo["POSITION"]  
@@ -127,8 +127,8 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
         # numstorm = pd.read_csv(r"SurgeData\%d-num_storm.csv"%N).values
         peak_c = pd.read_csv(r"SurgeData/%d-peak_c.csv"%N).values
         peak_w = pd.read_csv(r"SurgeData/%d-peak_w.csv"%N).values
-        surge_c = pd.read_csv(r"SurgeData/%d-surge_c.csv"%N).values
-        surge_w = pd.read_csv(r"SurgeData/%d-surge_w.csv"%N).values
+        surge_c = pd.read_csv(r"SurgeData/%d-waterlevel_c.csv"%N).values
+        surge_w = pd.read_csv(r"SurgeData/%d-waterlevel_w.csv"%N).values
         time_c = pd.read_csv(r"SurgeData/%d-time_c.csv"%N).values
         time_w = pd.read_csv(r"SurgeData/%d-time_w.csv"%N).values
         

@@ -106,7 +106,7 @@ print("Elapsed Time: ",elapsed_time, "sec")
 #print('Corresponding Cost:',total_cost_new)
 
 #f = open(str(ws)+'-'+str(we) + '-' + str(wh),'w')
-f = open("n2/"+fname, 'w')
+f = open("updatedrun/"+fname, 'w')
 f.write(str(ws)+'\n'+str(we) + '\n' + str(wh) +'\n' +str(total_cost_new)+'\n')
 f.write(str(wall_cost))
 

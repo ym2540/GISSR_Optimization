@@ -1,0 +1,1 @@
+wall_cost = 109360*wall_h*(wall_end-wall_start)*100

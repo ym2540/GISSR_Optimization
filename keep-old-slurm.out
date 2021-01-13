@@ -1,0 +1,33 @@
+/rigel/opt/anaconda3-5.1/lib/python3.6/site-packages/scipy/optimize/minpack.py:785: OptimizeWarning: Covariance of the parameters could not be estimated
+  category=OptimizeWarning)
+Traceback (most recent call last):
+  File "/rigel/opt/anaconda3-5.1/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2525, in get_loc
+    return self._engine.get_loc(key)
+  File "pandas/_libs/index.pyx", line 117, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 139, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1265, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1273, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'POSITION'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "main_opt_loop_new.py", line 96, in <module>
+    SV_all,roughness,slope,sect0,sect1,sect2,sect3,sect_1,sect_2,sect_3,numiter=2)
+  File "/rigel/apam/users/pcd2120/GISoptimization/Optimization_Seawall/GISSR_Optimization/fun_objective_loop_new.py", line 67, in objective
+    position = topo["POSITION"]  
+  File "/rigel/opt/anaconda3-5.1/lib/python3.6/site-packages/pandas/core/frame.py", line 2139, in __getitem__
+    return self._getitem_column(key)
+  File "/rigel/opt/anaconda3-5.1/lib/python3.6/site-packages/pandas/core/frame.py", line 2146, in _getitem_column
+    return self._get_item_cache(key)
+  File "/rigel/opt/anaconda3-5.1/lib/python3.6/site-packages/pandas/core/generic.py", line 1842, in _get_item_cache
+    values = self._data.get(item)
+  File "/rigel/opt/anaconda3-5.1/lib/python3.6/site-packages/pandas/core/internals.py", line 3843, in get
+    loc = self.items.get_loc(item)
+  File "/rigel/opt/anaconda3-5.1/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2527, in get_loc
+    return self._engine.get_loc(self._maybe_cast_indexer(key))
+  File "pandas/_libs/index.pyx", line 117, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 139, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1265, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1273, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'POSITION'
