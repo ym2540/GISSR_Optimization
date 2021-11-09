@@ -364,6 +364,14 @@ class damage:
         
         ###########################################
         
+        ### newly added on Nov 9, 2021 for getting total damage in each division
+        
+        cost_dmg_inc_inc   = np.column_stack((np.sum(cost_dmg,axis=0),np.sum(cost_inc,axis=0),np.sum(cost_inv,axis=0))) # matrix of costs for each building
+        cost_direct        = np.sum(cost_dmg_inc_inc,axis=1) # sum of direct damage for each building
+        df_cost_direct_div = pd.DataFrame({'dirct_cost':cost_direct,'DIV':div}) 
+        df_cost_direct_sum_div = df_cost_direct_div.groupby(by=["DIV"]).sum()
+        
+        
         ##below is the code to find the percentage of damage to each sector
         dmg_elec  = np.mean(dmgp[:,elec],  axis=1)
         dmg_com10 = np.mean(dmgp[:,com10], axis=1)
@@ -485,4 +493,4 @@ class damage:
         int_cost_util = np.sum(int_cost_util,axis=1)
         int_cost_tran = np.sum(int_cost_tran,axis=1)
         
-        return damage_loss,int_inop_util,int_inop_tran,int_cost_util,int_cost_tran
+        return damage_loss,int_inop_util,int_inop_tran,int_cost_util,int_cost_tran, df_cost_direct_sum_div
