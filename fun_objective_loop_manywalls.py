@@ -126,6 +126,8 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
     n_cost_tran_c   = [];   n_cost_tran_w   = []
 
     # start_time = time.time()
+    
+    n_cost_direct_sum_div = []
 
     for N in range(numiter):
         print(N)
@@ -175,6 +177,8 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
         n_damage_loss_c = np.append(n_damage_loss_c,np.sum(damage_loss_c));   n_damage_loss_w = np.append(n_damage_loss_w,np.sum(damage_loss_w))
         n_cost_util_c   = np.append(n_cost_util_c,np.sum(cost_util_c));       n_cost_util_w   = np.append(n_cost_util_w,np.sum(inop_util_w))
         n_cost_tran_c   = np.append(n_cost_tran_c,np.sum(cost_tran_c));       n_cost_tran_w   = np.append(n_cost_tran_w,np.sum(cost_tran_w))
+        
+        n_cost_direct_sum_div.append(np.array(df_cost_direct_sum_div_c+df_cost_direct_sum_div_w))
 
 
 
@@ -182,4 +186,4 @@ def objective(x,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,SVf10,SVf11,SVf12,S
     mean_cost_util_c    = np.mean(n_cost_util_c);   mean_cost_util_w    = np.mean(n_cost_util_w)
     mean_cost_tran_c    = np.mean(n_cost_tran_c);   mean_cost_tran_w    = np.mean(n_cost_tran_w)
 
-    return wall_cost + mean_damage_loss_c + mean_damage_loss_w + mean_cost_util_c + mean_cost_util_w + mean_cost_tran_c + mean_cost_tran_w, wall_cost
+    return wall_cost + mean_damage_loss_c + mean_damage_loss_w + mean_cost_util_c + mean_cost_util_w + mean_cost_tran_c + mean_cost_tran_w, wall_cost, n_cost_direct_sum_div
