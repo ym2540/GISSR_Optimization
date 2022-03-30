@@ -1,60 +1,89 @@
 
 import numpy as np
 import pandas as pd
-import csv
-import matplotlib.pyplot as plt
-import time
+import params
+import numpy as np
+import pandas as pd
+#import csv
+#import matplotlib.pyplot as plt
+#import time
 
-class damage:
-    def _init_(self, fld_h,flh,ftm,fid,crtcl_elv,bldgasst,bsmt,comarea,fldpln,numfl,bldgclass,div,
-             df_fire,df_poli,df_hosp,df_nurs,df_schl,df_eoc,
-             df_res11,df_res11b,df_res12,df_res12b,df_res2,df_res3,
-             df_res3b,df_htl,df_com1,df_com2,df_com3,df_com4,df_com5,
-             df_com7,df_com8,df_com9,df_com10,df_ind1,df_ind2,df_ind3,
-             df_ind4,df_ind5,df_ind6,df_agr,df_rel,df_gov,df_elec):
-        self.df_fire = df_fire
-        self.df_poli = df_poli
-        self.df_hosp = df_hosp
-        self.df_nurs = df_nurs
-        self.df_schl = df_schl
-        self.df_eoc = df_eoc
-        self.df_res11 = df_res11
-        #self.df_res11b = df_res11b
-        #self.df_res12 = df_res12
-        #self.df_res12b = df_res12b
-        #self.df_res2 = df_res2
-        #self.df_res3 = df_res3
-        #self.df_res3b = df_res3b
-        #self.df_htl = df_htl
-        #self.df_gov = df_gov
-        #self.df_com1 = df_com1
-        #self.df_com2 = df_com2
-        #self.df_com3 = df_com3
-        self.df_com4 = df_com4
-        self.df_com5 = df_com5
-        self.df_com8 = df_com8
-        self.df_com7 = df_com7
-        self.df_com9 = df_com9
-        self.df_com10 = df_com10
-        self.df_ind1 = df_ind1
-        self.df_ind2 = df_ind2
-        self.df_ind3 = df_ind3
-        self.df_ind4 = df_ind4
-        self.df_ind5 = df_ind5
-        self.df_ind6 = df_ind6
-        self.df_agr = df_agr
-        self.df_rel = df_rel
-        self.df_elec = df_elec
+class Damage:
+    def __init__(self, pluto_file="LMN_pluto_Div.csv", fragility_file="fragilitycurves.csv"):
+        self.H_dmg = np.linspace(-4, 24, 29)
+        self.H_dmg1 = np.linspace(0, 10, 11)
+
+        self.pluto = pd.read_csv(pluto_file)
+        self.df_curves = pd.read_csv(fragility_file)
+
+        self.fid = self.pluto["FID"]
+        self.crtcl_elv = self.pluto["MIN"]
+        self.bldgasst = self.pluto["BldgAsst"]
+        self.bsmt = self.pluto["BsmtCode"]
+        self.comarea = self.pluto["ComArea"]
+        self.fldpln = self.pluto["100yrFlood"]
+        self.numfl = self.pluto["NumFloors"]
+        self.bldgclass = self.pluto["BldgClass"]
+        self.div = self.pluto["Div"]
+        self.flh = 10  # floor height in ft
+
+        # Critical Facilities
+        self.df_fire = self.df_curves["fire"]
+        self.df_poli = self.df_curves["poli"]
+        self.df_hosp = self.df_curves["hosp"]
+        self.df_nurs = self.df_curves["nurs"]
+        self.df_schl = self.df_curves["schl"]
+        self.df_eoc = self.df_curves["eoc"]
+        self.df_res11 = self.df_curves["res11"]
+        self.df_res11b = self.df_curves["res11b"]
+        self.df_res12 = self.df_curves["res12"]
+        self.df_res12b = self.df_curves["res12b"]
+        self.df_res2 = self.df_curves["res2"]
+        self.df_res3 = self.df_curves["res3"]
+        self.df_res3b = self.df_curves["res3b"]
+        self.df_htl = self.df_curves["htl"]
+        self.df_com1 = self.df_curves["com1"]
+        self.df_com2 = self.df_curves["com2"]
+        self.df_com3 = self.df_curves["com3"]
+        self.df_com4 = self.df_curves["com4"]
+        self.df_com5 = self.df_curves["com5"]
+        self.df_com7 = self.df_curves["com7"]
+        self.df_com8 = self.df_curves["com8"]
+        self.df_com9 = self.df_curves["com9"]
+        self.df_com10 = self.df_curves["com10"]
+        self.df_ind1 = self.df_curves["ind1"]
+        self.df_ind2 = self.df_curves["ind2"]
+        self.df_ind3 = self.df_curves["ind3"]
+        self.df_ind4 = self.df_curves["ind4"]
+        self.df_ind5 = self.df_curves["ind5"]
+        self.df_ind6 = self.df_curves["ind6"]
+        self.df_agr = self.df_curves["agr"]
+        self.df_rel = self.df_curves["rel"]
+        self.df_gov = self.df_curves["gov"]
+        self.df_elec = self.df_curves['elec'][0:11]
+        self.df_subs = self.df_curves['subs'][0:11]
     
-    def dmg_cost_vector(fld_h,flh,ftm,fid,crtcl_elv,bldgasst,bsmt,comarea,fldpln,numfl,bldgclass,div,
-             df_fire,df_poli,df_hosp,df_nurs,df_schl,df_eoc,
-             df_res11,df_res11b,df_res12,df_res12b,df_res2,df_res3,
-             df_res3b,df_htl,df_com1,df_com2,df_com3,df_com4,df_com5,
-             df_com7,df_com8,df_com9,df_com10,df_ind1,df_ind2,df_ind3,
-             df_ind4,df_ind5,df_ind6,df_agr,df_rel,df_gov,df_elec,H,H1,N):
+    def dmg_cost_vector(self, fld_h):
         
         # start_time1 = time.time()
         
+        flh = self.flh; fid = self.fid; crtcl_elv = self.crtcl_elv
+        bldgasst = self.bldgasst; bsmt = self.bsmt; comarea = self.comarea
+        fldpln = self.fldpln; numfl = self.numfl; bldgclass = self.bldgclass
+        div = self.div; df_fire = self.df_fire; df_poli = self.df_poli
+        df_hosp = self.df_hosp; df_nurs = self.df_nurs; df_schl = self.df_schl
+        df_eoc = self.df_eoc; df_res11 = self.df_res11; df_res11b = self.df_res11b
+        df_res12 = self.df_res12; df_res12b = self.df_res12b; df_res2 = self.df_res2
+        df_res3 = self.df_res3; df_res3b = self.df_res3b; df_htl = self.df_htl
+        df_com1 = self.df_com1; df_com2 = self.df_com2; df_com3 = self.df_com3
+        df_com4 = self.df_com4; df_com5 = self.df_com5; df_com7 = self.df_com7
+        df_com8 = self.df_com8; df_com9 = self.df_com9; df_com10 = self.df_com10
+        df_ind1 = self.df_ind1; df_ind2 = self.df_ind2; df_ind3 = self.df_ind3
+        df_ind4 = self.df_ind4; df_ind5 = self.df_ind5; df_ind6 = self.df_ind6
+        df_agr = self.df_agr; df_rel = self.df_rel; df_gov = self.df_gov
+        df_elec = self.df_elec; H = self.H_dmg; H1 = self.H_dmg1
+        ftm = params.ftm
+
         damage_loss   = np.zeros((fld_h.shape[0],18))
         int_inop_util = np.zeros((fld_h.shape[0],13))
         int_inop_tran = np.zeros((fld_h.shape[0],13))
