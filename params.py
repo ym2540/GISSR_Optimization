@@ -1,3 +1,6 @@
+dh = 0.25  # delta height
+budget = 3*10**9
+
 storm_type = 'w'  # cold 'c' or warm 'w' 
 
 ndiv18 = 18

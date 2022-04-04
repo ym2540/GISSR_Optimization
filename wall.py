@@ -6,7 +6,8 @@ import params
 class Wall:
     def __init__(self, wall_pos_file):
         self.positions = pd.read_csv(wall_pos_file)["ID"]
-        self.heights = np.zeros(self.positions.size)
+        self.segment_count = self.positions.size
+        self.heights = np.zeros(self.segment_count)
         self.cost = 0
         self.segment_l = params.segment_l
 
