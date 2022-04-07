@@ -32,7 +32,6 @@ solutions = [[wall_cost, total_cost, 'N/A', *Wall.heights]]
 
 
 while wall_cost <= params.budget:
-    start_1 = time.time()
     # Calculate change in total cost for each potential allocation
     for sec in range(Wall.segment_count):
         Wall.heights[sec] = Wall.heights[sec] + params.dh
@@ -42,14 +41,11 @@ while wall_cost <= params.budget:
         wall_costs[sec] = wall_cost_test
         total_costs[sec] = total_cost_test
     # Allocate greedily, update costs and save new point
-    print(time.time() - start_1)
     next_allocation = np.argmax(marginals)
     wall_cost = wall_costs[next_allocation]
     solutions.append([wall_cost, total_costs[next_allocation], next_allocation, *Wall.heights])
     Wall.heights[-1] = Wall.heights[-1] - params.dh
     Wall.heights[next_allocation] = Wall.heights[next_allocation] + params.dh
-    print(time.time() - start_1)
-    print(wall_cost)
 
 
 solutions_df = pd.DataFrame(solutions)
