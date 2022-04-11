@@ -2,9 +2,8 @@ import numpy as np
 import pandas as pd
 import time
 
-# import functions
-from fun_floodestimate import FloodHeightWall
-from fun_floodestimate import FloodTravelSectGroup
+# import functions 
+from fun_floodestimate import FloodHeightWall, FloodTravelSectGroup, FloodHeight
 import params
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -18,7 +17,6 @@ def objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8
 
     ftm = params.ftm
     nt = params.nt
-    g = params.g
 
     ###################### MAIN #################################
     wall_cost = Wall.get_cost()
@@ -29,9 +27,9 @@ def objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8
         elev[wall_positions] = Topo.elev_wall[wall_positions] + wall_heights
     
     # Arays used for multiple storms
-    n_damage_loss_w = []
-    n_cost_util_w = []
-    n_cost_tran_w = []
+    # n_damage_loss_w = []
+    # n_cost_util_w = []
+    # n_cost_tran_w = []
 
     sandy_surge = pd.read_csv(
         r"CO-OPS_8518750_met_hr.csv")['Verified (m)'].values.transpose()
@@ -51,14 +49,15 @@ def objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8
                                                    SVf11[i, :], SVf12[i, :], SVf13[i, :], SVf14[i, :], SVf15[i, :], SVf16[i, :], SVf17[i, :], SVf18[i, :], SVf19[i, :], SVf20[i, :], time1, time2, cpi1_w, cpi2_w, nt, elev[Topo.div18 == i], Topo.fid[Topo.div18 == i], params.segment_l, peak_w, i)
     fld_h_w_sect_g, V_w_sect_avr = FloodTravelSectGroup(SV_all, params.ndiv18, peak_w, sect0, sect1, sect2, sect3, sect_3, sect_2, sect_1, V_w, SVfg1, SVfg2,
                                                         SVfg3, SVfg4, SVfg5, SVfg6, SVfg7, SVfg8, SVfg9, SVfg10, SVfg11, SVfg12, SVfg13, SVfg14, SVfg15, SVfg16, SVfg17, SVfg18, SVfg19, SVfg20)
-    fld_h_w_t = fld_h_w_sect_g/ftm
-    damage_loss_w, inop_util_w, inop_tran_w, cost_util_w, cost_tran_w, df_cost_direct_sum_div_w = Damage.dmg_cost_vector(fld_h_w_t)
-    # Only needed for multiple storms
-    n_damage_loss_w = np.append(n_damage_loss_w, np.sum(damage_loss_w))
-    n_cost_util_w = np.append(n_cost_util_w, np.sum(inop_util_w))
-    n_cost_tran_w = np.append(n_cost_tran_w, np.sum(cost_tran_w))
+    
+    damage_loss_w, inop_util_w, inop_tran_w, cost_util_w, cost_tran_w, df_cost_direct_sum_div_w = Damage.dmg_cost_vector(fld_h_w_sect_g/ftm)
+    
+    ##### Only needed for multiple storms
+    # n_damage_loss_w = np.append(n_damage_loss_w, np.sum(damage_loss_w))
+    # n_cost_util_w = np.append(n_cost_util_w, np.sum(inop_util_w))
+    # n_cost_tran_w = np.append(n_cost_tran_w, np.sum(cost_tran_w))
+    # mean_damage_loss_w = np.mean(n_damage_loss_w)
+    # mean_cost_util_w = np.mean(n_cost_util_w)
+    # mean_cost_tran_w = np.mean(n_cost_tran_w)
 
-    mean_damage_loss_w = np.mean(n_damage_loss_w)
-    mean_cost_util_w = np.mean(n_cost_util_w)
-    mean_cost_tran_w = np.mean(n_cost_tran_w)
-    return wall_cost + mean_damage_loss_w + mean_cost_util_w + mean_cost_tran_w, wall_cost, df_cost_direct_sum_div_w, fld_h_w, fld_h_w_t
+    return wall_cost+damage_loss_w+inop_util_w+inop_tran_w+cost_util_w+cost_tran_w, wall_cost, df_cost_direct_sum_div_w, fld_h_w_sect_g

@@ -3,7 +3,7 @@
 # from arcpy.sa import *
 #import scipy as sp
 import numpy as np
-#import pandas as pd
+import pandas as pd
 #import time
 #import csv
 #import os
@@ -23,7 +23,10 @@ import datetime
 #import sympy
 #from sympy.solvers import solve
 #from sympy import Symbol
+import params
+import matplotlib
 now = datetime.datetime.now()
+
 
 ## Functions
 
@@ -91,8 +94,8 @@ def FloodHeight(surfaceV,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8
     fld_h = np.zeros(np.shape(V_new))
     fld_h [V_new == 0]= 0
     fld_h [(V_new <= surfaceV[a2])  &  (V_new > 0)] = func_fit(V_new[(V_new <= surfaceV[a2])  &  (V_new > 0)],*SVf1)
-    fld_h [(V_new <= surfaceV[b2])  &  (V_new > surfaceV[a2])] = func_fit(V_new[(V_new <= surfaceV[b2])  &  (V_new > surfaceV[a2])],*SVf2)
-    fld_h [(V_new <= surfaceV[c2])  &  (V_new > surfaceV[b2])] = func_fit(V_new[(V_new <= surfaceV[c2])  &  (V_new > surfaceV[b2])],*SVf3)
+    fld_h [(V_new <= surfaceV[b2])  &  (V_new > surfaceVV[a2])] = func_fit(V_new[(V_new <= surfaceV[b2])  &  (V_new > surfaceV[a2])],*SVf2)
+    fld_h [(V_new <= surfaceV[c2])  &  (V_new > surface[b2])] = func_fit(V_new[(V_new <= surfaceV[c2])  &  (V_new > surfaceV[b2])],*SVf3)
     fld_h [(V_new <= surfaceV[d2])  &  (V_new > surfaceV[c2])] = func_fit(V_new[(V_new <= surfaceV[d2])  &  (V_new > surfaceV[c2])],*SVf4)
     fld_h [(V_new <= surfaceV[e2])  &  (V_new > surfaceV[d2])] = func_fit(V_new[(V_new <= surfaceV[e2])  &  (V_new > surfaceV[d2])],*SVf5)
     fld_h [(V_new <= surfaceV[f2])  &  (V_new > surfaceV[e2])] = func_fit(V_new[(V_new <= surfaceV[f2])  &  (V_new > surfaceV[e2])],*SVf6)
@@ -125,9 +128,6 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
     m1 = 12; m2 = 14; n1 = 13; n2 = 15;    o1 = 14; o2 = 16; p1 = 15; p2 = 17
     q1 = 16; q2 = 18; r1 = 17; r2 = 19;    s1 = 18; s2 = 20; t1 = 19; t2 = 21
 
-    #print("elev\n")
-    #print(elev)
-
     for k in fid:
         if k in ParWall:
             ds1 = np.tile(sec1_w[:,1] - sec1_w[:,0],(nt,1)).transpose()
@@ -137,13 +137,12 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
             h1_new = h1_w - elev[k]
             h2_new = h2_w - elev[k]
             h_new  = np.concatenate((h1_new,h2_new),axis=1)
-            cwr = 0.611 + 0.075*h_new[h_new > 0]/elev[k]            
+            cwr = 0.611 + 0.075*h_new[h_new > 0]/elev[k]
             v_new[h_new > 0] = ((l * h_new[h_new > 0]) / (l + (2*h_new[h_new > 0])))**(2./3.)*slope**.5 / roughness * cwr
             v_new[h_new <= 0] = 0
             V_new = V_new + np.sum(h_new*l*v_new*ds,axis=1)
             
         else:
-            #print(k)
             ds1 = np.tile(sec1_w[:,1] - sec1_w[:,0],(nt,1)).transpose()
             ds2 = np.tile(sec2_w[:,1] - sec2_w[:,0],(nt,1)).transpose()
             ds  = np.concatenate((ds1,ds2),axis=1)
@@ -155,7 +154,24 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
             v_new[h_new <= 0] = 0
 
             V_new = V_new + np.sum(h_new*l*v_new*ds,axis=1)
-        
+
+    
+    # SUPER SUBOPTIMAL - ONLY FOP TESTING (ndarray not supported)
+    # Sets volume to max volume based on surge peak if it is exceeded
+    max_vols = np.zeros(np.shape(h1_w)[0])
+    if i <= 9:
+        i_str = "0" + str(i)
+    else:
+        i_str = str(i)
+    file_name = "NewSurfaceVolumeCombined/LMN_div18_new_" + i_str + '.csv'
+    foo = pd.read_csv(file_name)
+    volumes = foo["volume"].to_numpy()
+    heights = foo["height"].to_numpy()
+    height_index = np.searchsorted(heights, ssh)
+    max_vol = volumes[height_index]
+    if V_new[0] > max_vol:
+        V_new[0] = max_vol
+    
     fld_h = np.zeros(np.shape(V_new))
     fld_h [V_new == 0]= 0
     fld_h [(V_new <= surfaceV[a2])  &  (V_new > 0)] = func_fit(V_new[(V_new <= surfaceV[a2])  &  (V_new > 0)],*SVf1)
@@ -169,7 +185,7 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
     fld_h [(V_new <= surfaceV[i2])  &  (V_new > surfaceV[h2])] = func_fit(V_new[(V_new <= surfaceV[i2])  &  (V_new > surfaceV[h2])],*SVf9)
     fld_h [(V_new <= surfaceV[j2])  &  (V_new > surfaceV[i2])] = func_fit(V_new[(V_new <= surfaceV[j2])  &  (V_new > surfaceV[i2])],*SVf10)
     fld_h [(V_new <= surfaceV[k2])  &  (V_new > surfaceV[j2])] = func_fit(V_new[(V_new <= surfaceV[k2])  &  (V_new > surfaceV[j2])],*SVf11)
-    fld_h [(V_new <= surfaceV[l2])  &  (V_new > surfaceV[k2])] = func_fit(V_new[(V_new <= surfaceV[l2])  &  (V_new > surfaceV[k2])],*SVf12)
+    fld_h [(V_new <= surfaceV[l2])  &  (V_new > surfaceV[k2])] = func_fit(V_new[(V_new <= surfaceV[l2])  &  (V_new > surfaceV[k2])],*SVf13)
     fld_h [(V_new <= surfaceV[m2])  &  (V_new > surfaceV[l2])] = func_fit(V_new[(V_new <= surfaceV[m2])  &  (V_new > surfaceV[l2])],*SVf13)
     fld_h [(V_new <= surfaceV[n2])  &  (V_new > surfaceV[m2])] = func_fit(V_new[(V_new <= surfaceV[n2])  &  (V_new > surfaceV[m2])],*SVf14)
     fld_h [(V_new <= surfaceV[o2])  &  (V_new > surfaceV[n2])] = func_fit(V_new[(V_new <= surfaceV[o2])  &  (V_new > surfaceV[n2])],*SVf15)
@@ -179,7 +195,7 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
     fld_h [(V_new <= surfaceV[s2])  &  (V_new > surfaceV[r2])] = func_fit(V_new[(V_new <= surfaceV[s2])  &  (V_new > surfaceV[r2])],*SVf19)
     fld_h [V_new >= surfaceV[s2]] = func_fit(V_new[V_new > surfaceV[s2]],*SVf20)
     fld_h [fld_h < 0]= 0
-             
+
     return fld_h,V_new
 
 
@@ -214,7 +230,6 @@ def FloodTravel(surfaceV,ssh,V_new,SVf1,SVf2,SVf3,SVf4,SVf5,SVf6,SVf7,SVf8,SVf9,
     fld_h [V_new >= surfaceV[s2]] = func_fit(V_new[V_new > surfaceV[s2]],*SVf20)
     fld_h [fld_h < 0]= 0
     fld_h [fld_h > ssh]= ssh[fld_h > ssh]
-    
     return fld_h
 
 def FloodTravelSectGroup(surfaceV,ndiv18,ssh,sect0,sect1,sect2,sect3,sect_3,sect_2,sect_1,V,
