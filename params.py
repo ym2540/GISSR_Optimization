@@ -4,7 +4,7 @@ budget = 3*10**9
 storm_type = 'w'  # cold 'c' or warm 'w' 
 
 ndiv18 = 18
-sections = [10, 11, 5, 12, 1, 13, 16, 4, 17, 15, 3, 14, 0, 9, 8, 7, 2, 6]  # sections, ordered from north-west and counterclockwise
+sections = [10, 11, 5, 12, 1, 13, 16, 4, 17, 15, 3, 14, 0, 9, 8, 7, 2, 6]  # sections, ordered from north-east and clockwise
 segment_l = 100  # length of a wall segment
 nt = 24 # split number of time history of storm surge
 

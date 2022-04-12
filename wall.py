@@ -5,10 +5,11 @@ import params
 
 class Wall:
     def __init__(self, wall_pos_file):
-        self.positions = pd.read_csv(wall_pos_file)["ID"]
+        self.positions = pd.read_csv(wall_pos_file)["ID"].to_numpy()  # ID of the wall segments, note: not in any particular geographical order
         self.segment_count = self.positions.size
-        self.heights = np.zeros(self.segment_count)
+        self.heights = np.zeros(self.segment_count)  # Ordered same as positions
         self.cost = 0
+        self.div18 = pd.read_csv(wall_pos_file)["div18"].to_numpy() 
         self.segment_l = params.segment_l
 
     def get_cost(self):

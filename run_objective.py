@@ -25,11 +25,8 @@ marginals = np.zeros(Wall.segment_count)
 wall_costs = np.zeros(Wall.segment_count)
 total_costs = np.zeros(Wall.segment_count)
 
-# Calulate initial point
-positions = pd.read_csv(params.wall_positions_file)
-for i in range(Wall.heights.size):
-    if positions['div18'].to_numpy()[i] in [13, 16, 1]:
-        Wall.heights[i] = 3
 
-total_cost, wall_cost, df_cost_direct_sum_div_w, h_prop = objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8, SVf9, SVf10, SVf11, SVf12, SVf13, SVf14, SVf15, SVf16, SVf17, SVf18, SVf19, SVf20, SVfg1, SVfg2, SVfg3, SVfg4, SVfg5, SVfg6, SVfg7, SVfg8, SVfg9, SVfg10, SVfg11, SVfg12, SVfg13, SVfg14, SVfg15, SVfg16, SVfg17, SVfg18, SVfg19, SVfg20, SV_all, sect0, sect1, sect2, sect3, sect_1, sect_2, sect_3)
+total_cost, wall_cost, df_cost_direct_sum_div_w, h_prop, h = objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8, SVf9, SVf10, SVf11, SVf12, SVf13, SVf14, SVf15, SVf16, SVf17, SVf18, SVf19, SVf20, SVfg1, SVfg2, SVfg3, SVfg4, SVfg5, SVfg6, SVfg7, SVfg8, SVfg9, SVfg10, SVfg11, SVfg12, SVfg13, SVfg14, SVfg15, SVfg16, SVfg17, SVfg18, SVfg19, SVfg20, SV_all, sect0, sect1, sect2, sect3, sect_1, sect_2, sect_3)
 
+print(h)
+print(h_prop)
