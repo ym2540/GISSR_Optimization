@@ -26,19 +26,18 @@ h_crit = shore_height + wall_height
 
 volume_div = np.zeros(divs.size)
 for div in divs:
-    volume_sub = np.zeros(surge_height.size)
     vel = np.zeros(surge_height.size)
     subsections = topo["subsection"].to_numpy()
     subsections = subsections[(topo["div"] == div)]
-    print(subsections)
-    for subsection in subsections:
+    volume_sub = np.zeros(subsections.size)
+    for i, subsection in enumerate(subsections):
         h_diff = surge_height - np.tile(h_crit[subsection], surge_height.size)
         vel[h_diff > 0] = ((l_seg * h_diff[h_diff > 0]) / (l_seg + 2 * h_diff[h_diff > 0])) ** (2/3) * slope[div] ** (1/2) / roughness[div]
         vel[h_diff < 0] = 0
         if wall_height[subsection] > 0:
             cwr = 0.611 + 0.075 * h_diff / np.tile(h_crit[subsection], surge_height.size) 
             vel = vel * cwr
-        volume_sub[div] = np.sum(l_seg * dt * h_diff * vel)
+        volume_sub[i] = np.sum(l_seg * dt * h_diff * vel)
     volume_div[div] = np.sum(volume_sub)
 
 print(volume_div)
