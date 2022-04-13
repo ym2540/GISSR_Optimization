@@ -50,7 +50,7 @@ def objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8
 
     fld_h_w_sect_g, V_w_sect_avr = FloodTravelSectGroup(SV_all, params.ndiv18, peak_w, sect0, sect1, sect2, sect3, sect_3, sect_2, sect_1, V_w, SVfg1, SVfg2,
                                                         SVfg3, SVfg4, SVfg5, SVfg6, SVfg7, SVfg8, SVfg9, SVfg10, SVfg11, SVfg12, SVfg13, SVfg14, SVfg15, SVfg16, SVfg17, SVfg18, SVfg19, SVfg20)
-<<<<<<< Updated upstream
+
     damage_loss_w, inop_util_w, inop_tran_w, cost_util_w, cost_tran_w, df_cost_direct_sum_div_w = Damage.dmg_cost_vector(fld_h_w_sect_g/ftm)
     
     ##### Only needed for multiple storms
@@ -62,16 +62,3 @@ def objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8
     # mean_cost_tran_w = np.mean(n_cost_tran_w)
 
     return wall_cost+damage_loss_w+inop_util_w+inop_tran_w+cost_util_w+cost_tran_w, wall_cost, df_cost_direct_sum_div_w, fld_h_w_sect_g, fld_h_w
-=======
-    fld_h_w_t = fld_h_w_sect_g/ftm
-    damage_loss_w, inop_util_w, inop_tran_w, cost_util_w, cost_tran_w, df_cost_direct_sum_div_w = Damage.dmg_cost_vector(fld_h_w_t)
-    # Only needed for multiple storms
-    n_damage_loss_w = np.append(n_damage_loss_w, np.sum(damage_loss_w))
-    n_cost_util_w = np.append(n_cost_util_w, np.sum(inop_util_w))
-    n_cost_tran_w = np.append(n_cost_tran_w, np.sum(cost_tran_w))
-
-    mean_damage_loss_w = np.mean(n_damage_loss_w)
-    mean_cost_util_w = np.mean(n_cost_util_w)
-    mean_cost_tran_w = np.mean(n_cost_tran_w)
-    return wall_cost + mean_damage_loss_w + mean_cost_util_w + mean_cost_tran_w, wall_cost, df_cost_direct_sum_div_w, fld_h_w, fld_h_w_sect_g
->>>>>>> Stashed changes

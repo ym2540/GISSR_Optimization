@@ -133,7 +133,6 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
     for i, Vol in enumerate(V_new):
         SVf = []
         height_index = np.searchsorted(H, ssh[i])
-        print(height_index -1)
         expr = 'SVf' + str(height_index-1)
         SVf = eval(expr)    # Not nice, but nexessary due to legacy SVf structure
         a = SVf[0]
@@ -166,7 +165,6 @@ def FloodHeightWall(surfaceV,ParWall,slope,roughness,SVf1,SVf2,SVf3,SVf4,SVf5,SV
     fld_h [(V_new <= surfaceV[s2])  &  (V_new > surfaceV[r2])] = func_fit(V_new[(V_new <= surfaceV[s2])  &  (V_new > surfaceV[r2])],*SVf19)
     fld_h [V_new >= surfaceV[s2]] = func_fit(V_new[V_new > surfaceV[s2]],*SVf20)
     fld_h [fld_h < 0]= 0
-    print(fld_h)
 
     return fld_h,V_new
 
@@ -210,7 +208,7 @@ def FloodTravelSectGroup(surfaceV,ndiv18,ssh,sect0,sect1,sect2,sect3,sect_3,sect
     V_sect = np.zeros((np.shape(V)[0],ndiv18))
     fld_h_sect = np.zeros((np.shape(V)[0],ndiv18))
     V_sect_avr = np.zeros((np.shape(V)[0],ndiv18))
- 
+
     # ID3~14
     for i in range(12):
         m = int(sect3[i][3])
