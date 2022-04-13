@@ -47,6 +47,7 @@ def objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8
     for i in range(params.ndiv18):
         fld_h_w[:, i], V_w[:, i] = FloodHeightWall(SV_all[i], wall_positions, Topo.slope[i], Topo.roughness[i], SVf1[i, :], SVf2[i, :], SVf3[i, :], SVf4[i, :], SVf5[i, :], SVf6[i, :], SVf7[i, :], SVf8[i, :], SVf9[i, :], SVf10[i, :],
                                                    SVf11[i, :], SVf12[i, :], SVf13[i, :], SVf14[i, :], SVf15[i, :], SVf16[i, :], SVf17[i, :], SVf18[i, :], SVf19[i, :], SVf20[i, :], time1, time2, cpi1_w, cpi2_w, nt, elev[Topo.div18 == i], Topo.fid[Topo.div18 == i], params.segment_l, peak_w, i)
+
     fld_h_w_sect_g, V_w_sect_avr = FloodTravelSectGroup(SV_all, params.ndiv18, peak_w, sect0, sect1, sect2, sect3, sect_3, sect_2, sect_1, V_w, SVfg1, SVfg2,
                                                         SVfg3, SVfg4, SVfg5, SVfg6, SVfg7, SVfg8, SVfg9, SVfg10, SVfg11, SVfg12, SVfg13, SVfg14, SVfg15, SVfg16, SVfg17, SVfg18, SVfg19, SVfg20)
     damage_loss_w, inop_util_w, inop_tran_w, cost_util_w, cost_tran_w, df_cost_direct_sum_div_w = Damage.dmg_cost_vector(fld_h_w_sect_g/ftm)
