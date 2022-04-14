@@ -1,4 +1,4 @@
-dh = 0.25  # delta height
+dh = 0.05  # delta height
 budget = 3*10**9
 
 storm_type = 'w'  # cold 'c' or warm 'w' 

@@ -1,3 +1,5 @@
+### Allocates increasing height to wall on a single section
+
 import time
 import numpy as np
 import pandas as pd
@@ -45,20 +47,23 @@ total_costs = np.zeros(Wall.segment_count)
 # print(pd.DataFrame(data=diff.flatten(), index=range(diff.size)))
 # print(pd.DataFrame(data=diff2.flatten(), index=range(diff2.size)))
 
-positions = []
-for i, p in enumerate(Wall.positions):
-    if Wall.div18[i] in [16]:
-        positions.append(p)
-print(positions)
+all_points = []
+all_points.append(np.linspace(0, 3, num=int((3-0)/params.dh)+1))
+print(np.unique(Wall.div18))
+exit()
+for div in np.unique(Wall.div18):
+    positions = []
+    for i, p in enumerate(Wall.positions):
+        if Wall.div18[i] == div:
+            positions.append(i)  # position index, (not ID)
 
+    points = []
+    while Wall.heights[positions][0] <= 3:
+        total_cost, wall_cost, cost_by_div, h_distr, h = objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8, SVf9, SVf10, SVf11, SVf12, SVf13, SVf14, SVf15, SVf16, SVf17, SVf18, SVf19, SVf20, SVfg1, SVfg2, SVfg3, SVfg4, SVfg5, SVfg6, SVfg7, SVfg8, SVfg9, SVfg10, SVfg11, SVfg12, SVfg13, SVfg14, SVfg15, SVfg16, SVfg17, SVfg18, SVfg19, SVfg20, SV_all, sect0, sect1, sect2, sect3, sect_1, sect_2, sect_3)
+        points.append(h[0][div])
+        Wall.heights[positions] += params.dh
 
-points = []
-while Wall.heights[positions][0] <= 5:
-    print(Wall.heights[positions][0])
-    total_cost, wall_cost, cost_by_div, flood_by_div, fld_h_w = objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8, SVf9, SVf10, SVf11, SVf12, SVf13, SVf14, SVf15, SVf16, SVf17, SVf18, SVf19, SVf20, SVfg1, SVfg2, SVfg3, SVfg4, SVfg5, SVfg6, SVfg7, SVfg8, SVfg9, SVfg10, SVfg11, SVfg12, SVfg13, SVfg14, SVfg15, SVfg16, SVfg17, SVfg18, SVfg19, SVfg20, SV_all, sect0, sect1, sect2, sect3, sect_1, sect_2, sect_3)
-    print(flood_by_div) 
-    points.append(*fld_h_w)
-    Wall.heights[positions] += params.dh
+    all_points.append(points)
 
-points_df = pd.DataFrame(points)
-points_df.to_csv("points_1d.csv")
+points_df = pd.DataFrame(all_points).transpose()
+points_df.to_csv("points_1d_1.csv")
