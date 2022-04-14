@@ -63,4 +63,4 @@ def objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8
     # mean_cost_util_w = np.mean(n_cost_util_w)
     # mean_cost_tran_w = np.mean(n_cost_tran_w)
 
-    return wall_cost+damage_loss_w+inop_util_w+inop_tran_w+cost_util_w+cost_tran_w, wall_cost, df_cost_direct_sum_div_w, fld_h_w_sect_g, fld_h_w
+    return wall_cost+damage_loss_w+inop_util_w+inop_tran_w+cost_util_w+cost_tran_w, wall_cost, df_cost_direct_sum_div_w, fld_h_w_sect_g, fld_h_w, V_w
