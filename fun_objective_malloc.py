@@ -23,8 +23,6 @@ def objective(Topo, Wall, Damage, SVf1, SVf2, SVf3, SVf4, SVf5, SVf6, SVf7, SVf8
     wall_positions = Wall.get_nonzero_pos()
     wall_heights = Wall.get_nonzero_heights()  # mask positions with height==0
     foo = pd.DataFrame(wall_heights)
-    foo.to_csv("foo.csv")
-    exit()
     
     elev = Topo.elev
     if wall_positions.size != 0:
