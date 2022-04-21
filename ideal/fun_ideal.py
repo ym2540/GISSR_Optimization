@@ -63,7 +63,6 @@ def calc_group_vol(groups, volume_div):
 
 
 def calc_group_h(topo, div_data, groups, volume_grouped):
-
     height_group = np.zeros(volume_grouped.shape)
     slope = div_data["slope"].to_numpy()
     for h in range(height_group.shape[1]):
