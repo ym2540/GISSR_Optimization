@@ -10,7 +10,7 @@ class Damage:
         self.h_min = self.damage_table["water_level"].values[0]
         self.h_max = self.damage_table["water_level"].values[-1]
         self.step = self.damage_table["water_level"].size
-
+        
     def calc_damage(self, water_level):
         damage = np.zeros(water_level.shape)
         for div in range(water_level.shape[1]):

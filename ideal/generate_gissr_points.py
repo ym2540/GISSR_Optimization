@@ -29,8 +29,6 @@ subsections = topo["subsection"].to_numpy()
 # generate groups
 groups = generate_groups(div_data)
 
-dmg_h_range = [0, 5]
-dmg_h_steps = 100
 segment_l = 100
 
 wall_divs = range(18)

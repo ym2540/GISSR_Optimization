@@ -2,32 +2,31 @@
 
 import pandas as pd
 import numpy as np
-import ideal_params as params
+import params_ideal as params
 
 from fun_ideal import calc_flood_height, generate_groups, calc_group_vol, calc_group_h
+from topo_ideal import Topo
 
 
-topo = pd.read_csv(params.topo_file)
+
 surge = pd.read_csv(params.storm_file).values
-div_data = pd.read_csv(params.div_data_file)
 surge_time = pd.read_csv(params.time_file).values
-roughness = div_data["roughness"].to_numpy()
-shore_height = topo["shore_height"].to_numpy()
-wall_height = topo["wall_height"].to_numpy().astype(np.float64)
-slope = div_data["slope"].to_numpy()
-divs = div_data["div"].to_numpy()
-subsections = topo["subsection"].to_numpy()
+
+Topo = Topo()
+
 
 # generate groups
-groups = generate_groups(div_data)
+groups = generate_groups(Topo.div_data)
 
 ######### Run without wall
 
-height_div, volume_div = calc_flood_height(topo, div_data, surge, surge_time, wall_height)
+wall_height = np.zeros(Topo.shore_height.size)
+
+height_div, volume_div = calc_flood_height(Topo, surge, surge_time, wall_height)
 # calculate group volumes
 volume_grouped = calc_group_vol(groups, volume_div)
 # get height in each group
-height_group = calc_group_h(topo, div_data, groups, volume_grouped)
+height_group = calc_group_h(Topo, groups, volume_grouped)
 print(height_group)
 
 ########## Allocate to all divisions in divs_allocate simultaniously
