@@ -21,8 +21,9 @@ groups = generate_groups(Topo.div_data)
 ######### Run without wall
 
 wall_height = np.zeros(Topo.shore_height.size)
+wall_pos = []
 
-height_div, volume_div = calc_flood_height(Topo, surge, surge_time, wall_height)
+height_div, volume_div = calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos)
 # calculate group volumes
 volume_grouped = calc_group_vol(groups, volume_div)
 # get height in each group
