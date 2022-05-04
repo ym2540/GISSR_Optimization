@@ -86,7 +86,8 @@ def calc_group_h(Topo, groups, volume_grouped, surge_peak):
     
     for div in range(height_group.shape[1]):
         avg_slope = np.mean(Topo.slope[groups[div][0]])
-        num_subsections = [i for i, div in enumerate(Topo.all_divs) if div in groups[div][0]]
-        group_length = len(num_subsections) * params.l_seg
+        subsections = [i for i, d in enumerate(Topo.all_divs) if d in groups[div][0]]
+        group_length = len(subsections) * params.l_seg
         height_group[:, div] = np.minimum(np.sqrt((2 * volume_grouped[:, div] * avg_slope) / group_length), surge_peak)  # Limit water height to surge peak 
+        #height_group[:, div] = np.sqrt((2 * volume_grouped[:, div] * avg_slope) / group_length) 
     return height_group
