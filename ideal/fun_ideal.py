@@ -14,11 +14,12 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
     # Calculates the first hand (direct) flood height and volume in each division given a surge, topography, and wall
 
     h_crit = Topo.shore_height.copy()
-    pos_nonzero = [pos for p, pos in enumerate(wall_pos) if wall_height[p] > 0]  # Get indices of only non-zero height wall segment
+    pos_nonzero = [pos for pos in wall_pos if wall_height[pos] > 0]  # Get indices of only non-zero height wall segment
+    
     if pos_nonzero != []:
-        h_crit[pos_nonzero] = np.maximum(Topo.shore_height_wall[pos_nonzero] + wall_height[pos_nonzero], h_crit[pos_nonzero])  # Set critical hright to highest point at each segment, wall or not
 
-    surge_peak = np.amax(surge, axis=1)
+        foo = np.maximum(Topo.shore_height_wall[pos_nonzero] + wall_height[pos_nonzero], h_crit[pos_nonzero])
+        h_crit[pos_nonzero] = np.maximum(Topo.shore_height_wall[pos_nonzero] + wall_height[pos_nonzero], h_crit[pos_nonzero])  # Set critical height to highest point at each segment, wall or not
 
     volume_div = np.zeros((surge.shape[0], Topo.divs.size))
     height_div = np.zeros((surge.shape[0], Topo.divs.size))
@@ -44,6 +45,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
         volume_div[:, div] = np.sum(volume_sub, axis=1)
 
         # Limit water level to surge peak
+        # surge_peak = np.amax(surge, axis=1)
         # max_volume = (subsections_div.size * params.l_seg * surge_peak**2) / (2 * Topo.slope[div])
         # volume_div[volume_div[:,div] > max_volume, div] = max_volume[volume_div[:,div] > max_volume]
             
@@ -89,5 +91,4 @@ def calc_group_h(Topo, groups, volume_grouped, surge_peak):
         subsections = [i for i, d in enumerate(Topo.all_divs) if d in groups[div][0]]
         group_length = len(subsections) * params.l_seg
         height_group[:, div] = np.minimum(np.sqrt((2 * volume_grouped[:, div] * avg_slope) / group_length), surge_peak)  # Limit water height to surge peak 
-        #height_group[:, div] = np.sqrt((2 * volume_grouped[:, div] * avg_slope) / group_length) 
     return height_group

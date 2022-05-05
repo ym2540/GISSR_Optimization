@@ -6,7 +6,7 @@ class Topo:
         self.topo = pd.read_csv(topo_file)
         self.div_data = pd.read_csv(div_data_file)
         self.roughness = self.div_data["roughness"].to_numpy()
-        self.shore_height = self.topo["shore_height"].to_numpy()
+        self.shore_height = self.topo["shore_height"].to_numpy(dtype=np.float64)
         self.shore_height_wall = self.topo["shore_height_wall"].to_numpy()
         self.wall_height = self.topo["wall_height"].to_numpy().astype(np.float64)
         self.slope = self.div_data["slope"].to_numpy()
