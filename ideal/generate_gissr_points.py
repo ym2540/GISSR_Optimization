@@ -13,11 +13,11 @@ from fun_ideal import calc_flood_height, generate_groups, calc_group_vol, calc_g
 from ideal_damage import Damage
 from topo_ideal import Topo
 
-topo_file = "ideal_topo_gp_points_1.csv"
+topo_file = "Input/ideal_topo_gp_points_1.csv"
 storm_file = "SurgeData/surge_w.csv"
-div_data_file = "ideal_div_data.csv"
+div_data_file = "Input/ideal_div_data.csv"
 time_file = "SurgeData/time_w.csv"
-damage_table_file = "damage_table.csv"
+damage_table_file = "Input/damage_table.csv"
 
 surge = pd.read_csv(storm_file).values
 surge_time = pd.read_csv(time_file).values
@@ -74,4 +74,4 @@ for point_x in points_x:
     points.append([*heights, cost_wall, cost_dmg, cost_tot])
 
 df = pd.DataFrame(points)
-df.to_csv("gissr_points.csv")
+df.to_csv("Output/gissr_points.csv")
