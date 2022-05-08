@@ -13,4 +13,3 @@ class Topo:
         self.divs = self.div_data["div"].to_numpy()
         self.all_divs = self.topo["div"].to_numpy()
         self.subsections = self.topo["subsection"].to_numpy()
-

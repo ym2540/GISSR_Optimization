@@ -7,7 +7,7 @@ from wall import Wall
 
 
 from fun_setup import generate_sv, generate_div_connections
-from fun_objective_malloc import objective
+from fun_objective_improved import objective
 import params
 
 ######### Initialize Sections and Surface Volume Functions #########

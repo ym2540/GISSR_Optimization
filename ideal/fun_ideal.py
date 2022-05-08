@@ -9,9 +9,23 @@ import numpy as np
 import pandas as pd
 import params_ideal as params
 
+def get_wall_heights(Topo, min_height):
+    wall_heights = min_height - Topo.shore_height_wall
+    wall_heights[Topo.shore_height >= min_height] = 0
+    positions = list(range(len(wall_heights)))
+    return positions, wall_heights
 
 def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
-    # Calculates the first hand (direct) flood height and volume in each division given a surge, topography, and wall
+    r"""Calculates the first hand (direct) flood height and volume in each division given a surge, topography, and wall
+
+    :Input:
+    - *Topo* 
+    - *surge*
+    - *surge_time*
+    - *wall_height*
+    - *wall_pos*
+
+    """
 
     h_crit = Topo.shore_height.copy()
     pos_nonzero = [pos for pos in wall_pos if wall_height[pos] > 0]  # Get indices of only non-zero height wall segment
@@ -39,6 +53,9 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
 
             if wall_height[subsection] > 0:
                 cwr = 0.611 + 0.075 * h_diff / np.tile(h_crit[subsection], surge.shape)  # Weir coeff if there is wall
+                cwr=1
+                # if any(c > 1 for c in cwr.flatten()):
+                #     print("Cwr over 1!!! Not good!")
                 vel = vel * cwr
             volume_sub[:, i] = np.sum(params.l_seg * params.dt * h_diff * vel, axis=1)
 
