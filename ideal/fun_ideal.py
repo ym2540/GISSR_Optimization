@@ -70,7 +70,6 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
         height_div[:,div] = np.sqrt((2 * volume_div[:, div] * Topo.slope[div]) / (params.l_seg * subsections_div.size))  # Water height on triangular prism coast
     return height_div, volume_div
 
-
 def generate_groups(div_data):
     # Get groupings based on water travel distance
 
