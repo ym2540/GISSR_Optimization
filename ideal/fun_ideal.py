@@ -15,6 +15,7 @@ def get_wall_heights(Topo, min_height):
     positions = list(range(len(wall_heights)))
     return positions, wall_heights
 
+
 def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
     r"""Calculates the first hand (direct) flood height and volume in each division given a surge, topography, and wall
 
@@ -53,7 +54,6 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
 
             if wall_height[subsection] > 0:
                 cwr = 0.611 + 0.075 * h_diff / np.tile(h_crit[subsection], surge.shape)  # Weir coeff if there is wall
-                cwr=1
                 # if any(c > 1 for c in cwr.flatten()):
                 #     print("Cwr over 1!!! Not good!")
                 vel = vel * cwr
@@ -61,7 +61,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
 
         volume_div[:, div] = np.sum(volume_sub, axis=1)
 
-        # Limit water level to surge peak
+        # Limit water level to surge peak (Likely not quite realistic)
         # surge_peak = np.amax(surge, axis=1)
         # max_volume = (subsections_div.size * params.l_seg * surge_peak**2) / (2 * Topo.slope[div])
         # volume_div[volume_div[:,div] > max_volume, div] = max_volume[volume_div[:,div] > max_volume]

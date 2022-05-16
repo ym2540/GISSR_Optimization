@@ -2,8 +2,8 @@ from damage import Damage
 import numpy as np
 import pandas as pd
 
-pluto_file = "input/LMN_pluto_Div.csv"
-fragility_file = "input/fragilitycurves.csv"
+pluto_file = "InputData/LMN_pluto_Div.csv"
+fragility_file = "InputData/fragilitycurves.csv"
 
 ftm = 0.3048  # ft to m
 

@@ -1,4 +1,3 @@
-divs_allocate = [0,1,2,3,4,5]  # divs to allocate wall
 h_start = 0.8  # startin height
 h_end = 1.1  # ending height
 
