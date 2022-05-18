@@ -49,7 +49,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
         for i, subsection in enumerate(subsections_div):
 
             h_diff = surge - np.ones(surge.shape) * h_crit[subsection] 
-            vel[h_diff > 0] = ((params.l_seg * h_diff[h_diff > 0]) / (params.l_seg + 2 * h_diff[h_diff > 0])) ** (2/3) * Topo.slope[div] ** (1/2) / Topo.roughness[div]  # Manning's equation for subdivision
+            vel[h_diff > 0] = ((params.l_seg * h_diff[h_diff > 0]) / (params.l_seg + 2 * h_diff[h_diff > 0])) ** (2/3) * Topo.slope_manning[div] ** (1/2) / Topo.roughness[div]  # Manning's equation for subdivision
             vel[h_diff < 0] = 0
 
             if wall_height[subsection] > 0:
@@ -69,6 +69,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
         # Calc water height
         height_div[:,div] = np.sqrt((2 * volume_div[:, div] * Topo.slope[div]) / (params.l_seg * subsections_div.size))  # Water height on triangular prism coast
     return height_div, volume_div
+
 
 def generate_groups(div_data):
     # Get groupings based on water travel distance
