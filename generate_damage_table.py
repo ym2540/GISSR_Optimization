@@ -13,10 +13,10 @@ data = []
 
 
 water_level = np.zeros((1,18))
-for i, h in enumerate(np.linspace(0, 10, num=1000)):
+for i, h in enumerate(np.linspace(0, 1000, num=100)):
     water_level[:] = h
     damage_loss_w, inop_util_w, inop_tran_w, cost_util_w, cost_tran_w, df_cost_direct_sum_div_w = Damage.dmg_cost_vector(water_level/ftm)
     data.append([h, *(df_cost_direct_sum_div_w["dirct_cost"].to_list())])
 
 data_df = pd.DataFrame(data)
-data_df.to_csv("damage_table_combined.csv")
+data_df.to_csv("damage_table_max.csv")
