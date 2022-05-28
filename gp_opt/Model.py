@@ -4,11 +4,19 @@ class Model:
 
     """
 
-    def __init__(self, GP_SR, GP_GC, params):
+    def __init__(self, GP_SR, GP_GC, params, phi_keys):
+        """
+        Input:
+            GP_SR:
+            GP_GC: 
+            params: A dict of params to dicts which contains 'bounds' touple(min, max) (bounds on parameter), 'pdf' function (probability density function), 'initial' float (some initial point, eg. prior on x from GP_SR or highest prop for phi)
+            phi_keys: List of keys (str) for all phi parameters, eg: 'wind_speed'
+        """
 
         self.GP_SR = GP_SR
         self.GP_GC = GP_GC
         self.params = params
+        self.phi_keys = phi_keys
 
     def marginalize_GP_GC(self):
         """

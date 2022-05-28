@@ -18,7 +18,7 @@ class Acquisition:
         return x, phi
 
 
-class UCB:
+class Acq_x_UCB:
     """
     GP Upper Confidence Bound Acq func. ONLY for x values (due to query_fused func hardcoding)
 
@@ -27,37 +27,41 @@ class UCB:
         self.beta = beta
         self.Model = Model
 
-    def objective(self, x):
+    def objective(self, x, beta):
         m, std = self.Model.query_fused(x, return_std=True)
-        return m - self.beta * std
+        return m - beta * std
 
-    def get_next_point(self):
-        f = lambda x: self.objective(x)
+    def get_next_point(self, beta=None):
+        if beta == None:
+            beta = self.beta
+        f = lambda x: self.objective(x, beta)
         res = minimize_scalar(f, method='brent', bounds=self.Model.params["x"].bounds)
-        
+
         if not res.success:
             raise Exception(res.message)
         return res.x
 
 
-class SOME_ACQ_FUNC_FOR_PHI:
+class Acq_phi_EUCB:
     """
-    Should combine minimization of uncertainty (std of phi) at high p(phi) and high d(x, phi) spots
+    Selects next storm param based on combination of probability of phi, mean of phi, and std of phi. 
     """
     def __init__(self, beta, Model):
         self.Model = Model
         self.beta = beta
 
-    def objective(self, phi, x):
+    def objective(self, phi, x, beta):
         point = np.insert(phi, 0, x)
         m, std = self.Model.query_GP_GC(point)
         p_phi = 1
         for val, param in enumerate(self.Model.phi_keys):
             p_phi = p_phi * self.Model.params[param]["pdf"](val)  # TODO
-        return p_phi * (m + self.beta * std)
+        return p_phi * (m + beta * std)
 
-    def get_next_point(self, x):
-        f = lambda phi: - self.objective(phi, x)
+    def get_next_point(self, x, beta=None):
+        if beta == None:
+            beta = self.beta
+        f = lambda phi: - self.objective(phi, x, beta)
         phi0 = np.array([p0["initial"] for p0 in itemgetter(self.Model.phi_keys)(self.Model.params)])
         bounds = [param["bounds"] for param in itemgetter(self.Model.phi_keys)(self.Model.params)]
         res = minimize(f, phi0, args=x, method='Nelder-Mead', bounds=bounds)
