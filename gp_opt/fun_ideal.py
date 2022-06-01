@@ -32,8 +32,6 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
     pos_nonzero = [pos for pos in wall_pos if wall_height[pos] > 0]  # Get indices of only non-zero height wall segment
     
     if pos_nonzero != []:
-
-        foo = np.maximum(Topo.shore_height_wall[pos_nonzero] + wall_height[pos_nonzero], h_crit[pos_nonzero])
         h_crit[pos_nonzero] = np.maximum(Topo.shore_height_wall[pos_nonzero] + wall_height[pos_nonzero], h_crit[pos_nonzero])  # Set critical height to highest point at each segment, wall or not
 
     volume_div = np.zeros((surge.shape[0], Topo.divs.size))
@@ -49,7 +47,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
         for i, subsection in enumerate(subsections_div):
 
             h_diff = surge - np.ones(surge.shape) * h_crit[subsection] 
-            vel[h_diff > 0] = ((params.l_seg * h_diff[h_diff > 0]) / (params.l_seg + 2 * h_diff[h_diff > 0])) ** (2/3) * Topo.slope_manning[div] ** (1/2) / Topo.roughness[div]  # Manning's equation for subdivision
+            vel[h_diff > 0] = ((params.l_seg * h_diff[h_diff > 0]) / (params.l_seg + 2 * h_diff[h_diff > 0])) ** (2 / 3) * Topo.slope_manning[div] ** (1 / 2) / Topo.roughness[div]  # Manning's equation for subdivision
             vel[h_diff < 0] = 0
 
             if wall_height[subsection] > 0:
@@ -67,7 +65,8 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
         # volume_div[volume_div[:,div] > max_volume, div] = max_volume[volume_div[:,div] > max_volume]
             
         # Calc water height
-        height_div[:,div] = np.sqrt((2 * volume_div[:, div] * Topo.slope[div]) / (params.l_seg * subsections_div.size))  # Water height on triangular prism coast
+        shore_length = params.l_seg * subsections_div.size
+        height_div[:, div] = Topo.volume_to_height(shore_length, volume_div[:, div])
     return height_div, volume_div
 
 
@@ -85,7 +84,7 @@ def generate_groups(div_data):
         if d + params.travel_dist > divs.size:
             end = divs.size - 1
 
-        group = divs[start:end+1]
+        group = divs[start:end + 1]
         groups.append((group, group.size))  # Returns list of touples with group indices and size
     return groups
 
@@ -104,8 +103,7 @@ def calc_group_h(Topo, groups, volume_grouped, surge_peak):
     height_group = np.zeros(volume_grouped.shape)
     
     for div in range(height_group.shape[1]):
-        avg_slope = np.mean(Topo.slope[groups[div][0]])
         subsections = [i for i, d in enumerate(Topo.all_divs) if d in groups[div][0]]
         group_length = len(subsections) * params.l_seg
-        height_group[:, div] = np.minimum(np.sqrt((2 * volume_grouped[:, div] * avg_slope) / group_length), surge_peak)  # Limit water height to surge peak 
+        height_group[:, div] = np.minimum(surge_peak, Topo.volume_to_height(group_length, volume_grouped[:, div])) 
     return height_group
