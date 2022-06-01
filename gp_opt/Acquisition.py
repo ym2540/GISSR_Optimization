@@ -23,8 +23,8 @@ class Acq_x_UCB:
     GP Upper Confidence Bound Acq func. ONLY for x values (due to query_fused func hardcoding)
 
     """
-    def __init__(self, beta, Model):
-        self.beta = beta
+    def __init__(self, beta_func, Model):
+        self.beta_func = beta_func
         self.Model = Model
 
     def objective(self, x, beta):
@@ -33,7 +33,7 @@ class Acq_x_UCB:
 
     def get_next_point(self, beta=None):
         if beta == None:
-            beta = self.beta
+            beta = self.beta_func()
         f = lambda x: self.objective(x, beta)
         res = minimize_scalar(f, method='brent', bounds=self.Model.params["x"].bounds)
 
@@ -46,9 +46,9 @@ class Acq_phi_EUCB:
     """
     Selects next storm param based on combination of probability of phi, mean of phi, and std of phi. 
     """
-    def __init__(self, beta, Model):
+    def __init__(self, beta_func, Model):
         self.Model = Model
-        self.beta = beta
+        self.beta_func = beta_func
 
     def objective(self, phi, x, beta):
         point = np.insert(phi, 0, x)
@@ -60,7 +60,7 @@ class Acq_phi_EUCB:
 
     def get_next_point(self, x, beta=None):
         if beta == None:
-            beta = self.beta
+            beta = self.beta_func()
         f = lambda phi: - self.objective(phi, x, beta)
         phi0 = np.array([p0["initial"] for p0 in itemgetter(self.Model.phi_keys)(self.Model.params)])
         bounds = [param["bounds"] for param in itemgetter(self.Model.phi_keys)(self.Model.params)]
@@ -69,3 +69,12 @@ class Acq_phi_EUCB:
         if not res.success:
             raise Exception(res.message)
         return res.x
+
+
+class Beta_const:
+
+    def __init__(self, beta):
+        self.beta = beta
+
+    def get(self):
+        return self.beta

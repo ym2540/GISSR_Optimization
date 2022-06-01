@@ -7,9 +7,7 @@ def estimate_tide_distr(Tide):
     N = 1000000
     timescale=80*365.25*24
     ts = np.linspace(0,timescale, N)
-
     
-
     points = [None]*N
     i = 0
     for t in ts:
@@ -18,8 +16,6 @@ def estimate_tide_distr(Tide):
         i += 1
 
     ker = gaussian_kde(points)
-
-    
 
     # PLOT
     # h_min = min(points)
@@ -34,6 +30,3 @@ def estimate_tide_distr(Tide):
     # plt.savefig("Output/tide_distr.png", transparent=True, bbox_inches='tight')
 
     return ker
-
-Tide = Tide()
-estimate_tide_distr(Tide)

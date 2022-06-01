@@ -5,8 +5,8 @@ import pandas as pd
 
 
 class GC_job:
-
-    def __init__(self, id_, setrun_templ_path='setrun_template.py', makefile_templ_path='Makefile_template'):
+    ## TODO setrun_templ
+    def __init__(self, id_, setrun_templ_path='setrun_sloped_beach.py', makefile_templ_path='Makefile_template'):
         self.id_ = str(id_)
         self.job_path = os.path.join('jobs/', self.id)
         self.script_name = 'GC_' + str(self.id_) + '.sh'
@@ -14,7 +14,7 @@ class GC_job:
         self.makefile_templ_path = makefile_templ_path
         os.mkdir(self.job_path)
 
-    def run_job(self):
+    def run(self):
         script_path = os.path.join(self.job_path, self.script_name)
         self.create_makefile()
         self.create_setrun()
@@ -43,12 +43,6 @@ class GC_job:
     def create_makefile(self):
         path = os.path.join(self.job_path, 'Makefile')
         shutil.copyfile(self.makefile_templ_path, path)
-    
-    def create_all(self):
-        self.create_makefile()
-        self.create_setrun()
-        self.create_script()
-        self.run_job()
 
 
 def make_storm_file(id_, phi):
@@ -61,7 +55,9 @@ def make_storm_file(id_, phi):
 
     Creates a new storm file with specified storm params.
     """
-
+    path = os.path.join('jobs/', id_, 'storm.storm')
+    shutil.copyfile('ike.storm', path)
+    return path
 
 def make_topo_file(id_, x):
     """
@@ -74,6 +70,9 @@ def make_topo_file(id_, x):
     Creates new topo file with wall height as specified
     NEEDS: A basic topo file with wall h=0 and location of wall #TODO
     """
+    path = os.path.join('jobs/', id_, 'topo.tt3')
+    shutil.copyfile('beach_nowall.tt3', path)
+    return path
 
 
 def make_all(id_, x, phi):

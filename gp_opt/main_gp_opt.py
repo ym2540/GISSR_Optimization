@@ -1,3 +1,6 @@
+import estimate_tide_distr
+from Tide_class import Tide
+
 """
 FULL FLOW SHOULD BE:
 0. Init GeoClaw with correct topo
@@ -10,3 +13,6 @@ FULL FLOW SHOULD BE:
 7. Create Optimizer class with acquisition functions and model
 8. Optimize
 """
+
+Tide = Tide()
+tide_ker = estimate_tide_distr(Tide)
