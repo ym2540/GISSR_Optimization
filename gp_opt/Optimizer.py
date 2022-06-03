@@ -18,7 +18,7 @@ class Optimizer:
             # Extract time series from outside gauges for SR (res)
             # Superimpose tide at all time steps and all gauges (distances), both inside and outside
             # Perturb tide stage and superimpose to get points around tide stage (HYP: max perturb, perturb resolution, added error?)
-            # Get surge_peak for all points. Calculate volume through simple topo. Recalculate height from surfaceV func. Get damage
+            # Get surge_peak for all points. Calculate volume through simple topo. Recalculate height from surfaceV func. Get damage (use N)
             # 
             # Run SR on same points for reference? (Measures error against ground truth, and error aginst perturbed solutions), maybe correct for error?
             # Perturb x on all SR points. Run SR. (HYP: max perturb, resolution)

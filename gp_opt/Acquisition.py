@@ -32,7 +32,7 @@ class Acq_x_UCB:
         return m - beta * std
 
     def get_next_point(self, beta=None):
-        if beta == None:
+        if beta is None:
             beta = self.beta_func()
         f = lambda x: self.objective(x, beta)
         res = minimize_scalar(f, method='brent', bounds=self.Model.params["x"].bounds)
@@ -59,7 +59,7 @@ class Acq_phi_EUCB:
         return p_phi * (m + beta * std)
 
     def get_next_point(self, x, beta=None):
-        if beta == None:
+        if beta is None:
             beta = self.beta_func()
         f = lambda phi: - self.objective(phi, x, beta)
         phi0 = np.array([p0["initial"] for p0 in itemgetter(self.Model.phi_keys)(self.Model.params)])

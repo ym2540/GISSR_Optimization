@@ -16,7 +16,7 @@ def get_wall_heights(Topo, min_height):
     return positions, wall_heights
 
 
-def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
+def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos, dt=None):
     r"""Calculates the first hand (direct) flood height and volume in each division given a surge, topography, and wall
 
     :Input:
@@ -27,6 +27,9 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
     - *wall_pos*
 
     """
+    if dt is None:
+        dt = surge_time[:, 1] - surge_time[:, 0]
+        dt = np.tile(dt.reshape(1, dt.size).transpose(), (surge_time.shape))
 
     h_crit = Topo.shore_height.copy()
     pos_nonzero = [pos for pos in wall_pos if wall_height[pos] > 0]  # Get indices of only non-zero height wall segment
@@ -55,7 +58,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
                 # if any(c > 1 for c in cwr.flatten()):
                 #     print("Cwr over 1!!! Not good!")
                 vel = vel * cwr
-            volume_sub[:, i] = np.sum(params.l_seg * params.dt * h_diff * vel, axis=1)
+            volume_sub[:, i] = np.sum(params.l_seg * dt * h_diff * vel, axis=1)
 
         volume_div[:, div] = np.sum(volume_sub, axis=1)
 

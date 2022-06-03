@@ -43,6 +43,12 @@ frequency = 0.7  # storm/year. 150km range, all intensities
 N = poisson(modelling_period * frequency)
 N_bounds = (0, None)
 
+# d_l - distance to landfall
+# uniform
+# TODO
+
+# alpha - landfall heading
+# TODO
 
 # Combine all variables
 variables = {

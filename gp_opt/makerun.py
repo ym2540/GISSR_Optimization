@@ -33,8 +33,8 @@ class GC_job:
         file.write("#\n")
         file.write("#SBATCH --account=apam\n")
         file.write("#SBATCH --job-name=GC_" + self.id_ + "\n")
-        file.write("#SBATCH -c 8\n")
-        file.write("#SBATCH -t 0-12:00\n")
+        file.write("#SBATCH -N 4\n")
+        file.write("#SBATCH --time=0-12:00\n")
         file.write("#SBATCH --mem-per-cpu=5gb\n\n")
 
         file.write("make new\n")
@@ -61,7 +61,7 @@ def make_storm_file(id_, phi):
 
     Creates a new storm file with specified storm params.
     """
-    path = os.path.join('jobs/', str(id_), 'storm.storm')
+    path = os.path.join('jobs/', str(id_), 'ike.storm')  # TODO name
     if not os.path.exists(path):
         shutil.copyfile('ike.storm', path)
     return path
@@ -77,7 +77,7 @@ def make_topo_file(id_, x):
     Creates new topo file with wall height as specified
     NEEDS: A basic topo file with wall h=0 and location of wall #TODO
     """
-    path = os.path.join('jobs/', str(id_), 'topo.tt3')
+    path = os.path.join('jobs/', str(id_), 'beach_nowall.tt3')  # TODO name
     if not os.path.exists(path):
         shutil.copyfile('beach_nowall.tt3', path)
     return path
