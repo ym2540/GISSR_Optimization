@@ -1,5 +1,6 @@
 import os
 import glob
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from scipy.stats import gaussian_kde
@@ -21,6 +22,8 @@ def estimate_v_distr():
     # prob = ker.pdf(eval_points)
     # plt.hist(points, bins=100, density=True)
     # plt.plot(eval_points, prob)
+    # plt.xlabel(r'Storm intensity (kt)')
+    # plt.ylabel('Probability')
 
     # plt.savefig("Output/v_distr.png", transparent=True, bbox_inches='tight')
 

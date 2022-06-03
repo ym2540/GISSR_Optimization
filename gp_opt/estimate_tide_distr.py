@@ -1,5 +1,6 @@
-# from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 from scipy.stats import gaussian_kde
+from Tide_class import Tide
 import numpy as np
 
 
@@ -26,6 +27,10 @@ def estimate_tide_distr(Tide):
     # y = ker.pdf(eval_points)
     # plt.hist(points, bins=100, density=True)
     # plt.plot(eval_points, y)
+
+    # plt.xlabel(r'Tide height (m) above MSL')
+    # plt.ylabel(r'Probability')
+    # #plt.show()
 
     # plt.savefig("Output/tide_distr.png", transparent=True, bbox_inches='tight')
 
