@@ -16,7 +16,7 @@ def get_wall_heights(Topo, min_height):
     return positions, wall_heights
 
 
-def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
+def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos, dt=None):
     r"""Calculates the first hand (direct) flood height and volume in each division given a surge, topography, and wall
 
     :Input:
@@ -27,6 +27,10 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
     - *wall_pos*
 
     """
+    if dt is None:
+        dt = surge_time[:, 1] - surge_time[:, 0]
+        dt = dt.reshape(1, dt.shape[0])
+        dt = np.tile(dt.transpose(), (1, surge_time.shape[1])) * 60 ** 2
 
     h_crit = Topo.shore_height.copy()
     pos_nonzero = [pos for pos in wall_pos if wall_height[pos] > 0]  # Get indices of only non-zero height wall segment
@@ -47,7 +51,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
         for i, subsection in enumerate(subsections_div):
 
             h_diff = surge - np.ones(surge.shape) * h_crit[subsection] 
-            vel[h_diff > 0] = ((params.l_seg * h_diff[h_diff > 0]) / (params.l_seg + 2 * h_diff[h_diff > 0])) ** (2/3) * Topo.slope_manning[div] ** (1/2) / Topo.roughness[div]  # Manning's equation for subdivision
+            vel[h_diff > 0] = ((params.l_seg * h_diff[h_diff > 0]) / (params.l_seg + 2 * h_diff[h_diff > 0])) ** (2 / 3) * Topo.slope_manning[div] ** (1 / 2) / Topo.roughness[div]  # Manning's equation for subdivision
             vel[h_diff < 0] = 0
 
             if wall_height[subsection] > 0:
@@ -55,7 +59,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
                 # if any(c > 1 for c in cwr.flatten()):
                 #     print("Cwr over 1!!! Not good!")
                 vel = vel * cwr
-            volume_sub[:, i] = np.sum(params.l_seg * params.dt * h_diff * vel, axis=1)
+            volume_sub[:, i] = np.sum(params.l_seg * dt * h_diff * vel, axis=1)
 
         volume_div[:, div] = np.sum(volume_sub, axis=1)
 
@@ -66,7 +70,7 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos):
             
         # Calc water height
         shore_length = params.l_seg * subsections_div.size
-        height_div[:,div] = Topo.volume_to_height(shore_length, volume_div[:, div])
+        height_div[:, div] = Topo.volume_to_height(shore_length, volume_div[:, div])
     return height_div, volume_div
 
 
@@ -84,7 +88,7 @@ def generate_groups(div_data):
         if d + params.travel_dist > divs.size:
             end = divs.size - 1
 
-        group = divs[start:end+1]
+        group = divs[start:end + 1]
         groups.append((group, group.size))  # Returns list of touples with group indices and size
     return groups
 

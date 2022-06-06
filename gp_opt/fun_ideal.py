@@ -29,7 +29,8 @@ def calc_flood_height(Topo, surge, surge_time, wall_height, wall_pos, dt=None):
     """
     if dt is None:
         dt = surge_time[:, 1] - surge_time[:, 0]
-        dt = np.tile(dt.reshape(1, dt.size).transpose(), (surge_time.shape))
+        dt = dt.reshape(1, dt.shape[0])
+        dt = np.tile(dt.transpose(), (1, surge_time.shape[1])) * 60 ** 2
 
     h_crit = Topo.shore_height.copy()
     pos_nonzero = [pos for pos in wall_pos if wall_height[pos] > 0]  # Get indices of only non-zero height wall segment
