@@ -1,11 +1,55 @@
 import sys
 import os
 import shutil
+
 import pandas as pd
+
+import batch
+
+
+class GC_batch:
+
+    def __init__(self, jobs):
+        """
+        input:
+            jobs: list of dicts - [{storm_id:int, topo_id:int x:float, phi:dict of storm params}, ... ,  ]
+        """
+
+        self.jobs = jobs
+
+    def create_storms(self):
+        for job in self.jobs:
+            # CREATE STORM WITH NAME job["storm_id"].storm in batch storm dir
+            storm = job["storm_id"] + ".storm"
+            path = os.path.join('storms/', storm)
+            shutil.copyfile('ike.storm', path) # Obviously TODO
+
+    def create_topos(self):
+        for job in self.jobs:
+            # CREATE TOPO WITH NAME job["topo_id"].t33 in batch topos dir
+            topo = job["topo_id"] + ".tt3"
+            path = os.path.join("topos/", topo)
+            shutil.copyfile('beach_nowall.tt3', path)
+
+    def create_all(self):
+        self.create_topos()
+        self.create_storms()
+
+    def run(self):
+        Jobs = []
+        for job in self.jobs:
+            Job = batch.StormTopoJob(self.storm_id, self.topo_id)
+            Job.type = "batch_jobs"
+            Jobs.append(Job)
+
+        Controller = batch.HabaneroBatchController(jobs=Jobs)
+        Controller.plot = False
+        Controller.wait = True
+        Controller.run()
 
 
 class GC_job:
-    ## TODO setrun_templ
+    # TODO setrun_templ
     def __init__(self, id_, x, phi, setrun_templ_path='setrun_sloped_beach.py', makefile_templ_path='Makefile_template'):
         self.id_ = str(id_)
         self.phi = phi
@@ -33,9 +77,16 @@ class GC_job:
         file.write("#\n")
         file.write("#SBATCH --account=apam\n")
         file.write("#SBATCH --job-name=GC_" + self.id_ + "\n")
-        file.write("#SBATCH -N 4\n")
+        file.write("#SBATCH --mail-type=ALL\n")
+        file.write("#SBATCH --mail-user=av3081@columbia.edu\n")
+        file.write("#SBATCH -N 1\n")
+        file.write("#SBATCH -c 32\n")
         file.write("#SBATCH --time=0-12:00\n")
-        file.write("#SBATCH --mem-per-cpu=5gb\n\n")
+        file.write("#SBATCH --mem=187G\n\n")
+
+        #file.write("export FFLAGS=\'-02 fopenmp\'") hardcoded in Makefile_template
+
+        file.write("export OMP_NUM_THREADS=32\n\n")
 
         file.write("make new\n")
         file.write("make .output\n")

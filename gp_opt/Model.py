@@ -1,7 +1,7 @@
 
 class Model:
     """
-
+    
     """
 
     def __init__(self, GP_SR, GP_GC, params, phi_keys):
@@ -20,7 +20,7 @@ class Model:
 
     def marginalize_GP_GC(self):
         """
-        Marginalizes out all storm parameters from GP. Integrates p(phi)*d(x | phi) d phi
+        Marginalizes out all storm parameters from GP. Integrates p(phi)*d(x | phi) d phi TODO
         """
         self.GP_GC_marg
         pass
